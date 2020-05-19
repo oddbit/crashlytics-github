@@ -1,0 +1,148 @@
+# Copyright Oddbit
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: crashlytics-github
+version: 0.0.1
+specVersion: v1beta
+
+displayName: Integrate Crashlytics with Github issues
+description: Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
+
+license: Apache-2.0
+
+sourceUrl: https://github.com/oddbit/crashlytics-github
+releaseNotesUrl: https://github.com/oddbit/crashlytics-github/CHANGELOG.md
+
+author:
+  authorName: Oddbit
+  url: https://oddbit.id
+
+contributors:
+  - authorName: Dennis Alund
+    url: https://github.com/DennisAlund
+
+billingRequired: true
+
+resources:
+  - name: createNewGithubIssue
+    type: firebaseextensions.v1beta.function
+    description: Creates new Github Issue when a new Crashlytics Issue is created.
+    properties:
+      sourceDirectory: ./functions
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: providers/firebase.crashlytics/eventTypes/issue.new
+        resource: projects/${PROJECT_ID}
+
+  - name: updateVelocityAlert
+    type: firebaseextensions.v1beta.function
+    description:
+      Listens for velocity alerts and updates existing Github issues with new
+      information, or creates a new Github issue if not possible to find any
+      existing Github issue that matches.
+    properties:
+      sourceDirectory: ./functions
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: providers/firebase.crashlytics/eventTypes/issue.velocityAlert
+        resource: projects/${PROJECT_ID}
+
+params:
+  - param: LOCATION
+    label: Cloud Functions location
+    description: >-
+      Where do you want to deploy the functions created for this extension?
+    type: select
+    options:
+      - label: Iowa (us-central1)
+        value: us-central1
+      - label: South Carolina (us-east1)
+        value: us-east1
+      - label: Northern Virginia (us-east4)
+        value: us-east4
+      - label: Belgium (europe-west1)
+        value: europe-west1
+      - label: London (europe-west2)
+        value: europe-west2
+      - label: Frankfurt (europe-west3)
+        value: europe-west3
+      - label: Hong Kong (asia-east2)
+        value: asia-east2
+      - label: Tokyo (asia-northeast1)
+        value: asia-northeast1
+    default: us-central1
+    required: true
+    immutable: true
+
+  - param: GITHUB_API_USER
+    label: Github API user
+    description: >-
+      The user account that the extension will be used to access
+      the Github Repository. All issues and comments that are created
+      will be using this account as actor. This is most likely, you
+      who are reading this. Your own Github Account.
+    type: string
+    example: octocat
+    required: true
+
+  - param: GITHUB_PERSONAL_ACCESS_TOKEN
+    label: Github Personal Access Token
+    description: >-
+      [Read Github Documentation](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+       on how to obtain a Github Personal Access Token.
+    type: string
+    example: a1b2c3d4e5f6g7
+    required: true
+
+  - param: GITHUB_REPOSITORY
+    label: Github Repository
+    description: >-
+      The name of the Github Repository where the issue reports will be created.
+      This should be the full repository reference with both owner and repository
+      name. For example: [octocat/Hello-World](https://github.com/octocat/Hello-World)
+    type: string
+    example: octocat/Hello-World
+    required: true
+
+  - param: ISSUE_ASSIGNEES
+    label: Github Issue Assignees
+    description: >-
+      Automatically assign the issues to a repository collaborator.
+      Provide a comma separated list of users, such as: octocat, DennisAlund
+      Each comma separated value will add a user as assignee to the issue.
+    type: string
+    example: octocat, DennisAlund
+    required: false
+
+  - param: ISSUE_LABELS_NEW
+    label: Crashlytics Issue Labels
+    description: >-
+      Github issue labels to be added if Crashlytics is reporting a new issue.
+      Provide a comma separated list of labels, such as: bug, crashlytics
+      Each comma separated value will add a label to the issue.
+    type: string
+    example: bug, crashlytics
+    default: bug, crashlytics
+    required: false
+
+  - param: ISSUE_LABELS_VELOCITY
+    label: Velocity Alert Labels
+    description: >-
+      Github issue labels to be added if Crashlytics is reporting a velocity alert.
+      Provide a comma separated list of labels, such as: bug, crashlytics: velocity, priority
+      Each comma separated value will add a label to the issue.
+    type: string
+    example: bug, crashlytics
+    default: bug, crashlytics
+    required: false

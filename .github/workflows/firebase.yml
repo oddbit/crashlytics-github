@@ -1,0 +1,47 @@
+name: Firebase
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths:
+      - .github/workflows/firebase.yml
+      - "functions/**/*"
+  push:
+    branches:
+      - master
+      - develop
+    paths:
+      - .github/workflows/firebase.yml
+      - "functions/**/*"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        test: ["offline"]
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - name: Get YARN cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Activate YARN cache
+        uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - run: yarn --cwd functions install
+
+      - name: Run tests
+        run: yarn --cwd functions test:${{ matrix.test }}
