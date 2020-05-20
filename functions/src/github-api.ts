@@ -21,13 +21,19 @@ import { GithubIssue } from './issue.model';
 
 type ApiMethods = 'GET' | 'PATCH' | 'POST';
 function callApi(method: ApiMethods, endPoint: string, payload: any) {
+  const apiUser = config.githubApiUser;
+  const apiToken = config.githubAccessToken;
+  const repository = config.githubRepository;
+  const apiUrl = `https://api.github.com/repos/${repository}/${endPoint}`;
+  console.log('[callApi] ' + JSON.stringify({ apiUser, repository, apiUrl }));
+
   return rp({
     auth: {
-      user: config.githubApiUser,
-      pass: config.githubAccessToken,
+      user: apiUser,
+      pass: apiToken,
     },
     method: method,
-    uri: `https://api.github.com/repos/${config.githubRepository}/${endPoint}`,
+    uri: apiUrl,
     body: payload,
     json: true,
     headers: { 'user-agent': 'oddbit/crashlytics-integration' },
