@@ -2,11 +2,9 @@
 
 **Description**: Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
 
-
-
 **Details**: Use this extension to add integrate Crashlytics reports with Github Issues.
 
-This extension creates and updates Github Issues with information from Crashlyitics. It will mark up issues
+This extension creates and updates Github Issues with information from Crashlytics. It will mark up issues
 so that they can be updated upon new information such as velocity reports or regressions.
 
 This extension uses Github API, so you'll need to supply a
