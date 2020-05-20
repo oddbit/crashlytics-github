@@ -21,8 +21,8 @@ description: Integrates Crashlytics issue reports with Github Issues and keeps t
 
 license: Apache-2.0
 
-sourceUrl: https://github.com/oddbit/crashlytics-github
-releaseNotesUrl: https://github.com/oddbit/crashlytics-github/CHANGELOG.md
+sourceUrl: https://github.com/oddbit/crashlytics-github/tree/master
+releaseNotesUrl: https://github.com/oddbit/crashlytics-github/tree/master/CHANGELOG.md
 
 author:
   authorName: Oddbit
