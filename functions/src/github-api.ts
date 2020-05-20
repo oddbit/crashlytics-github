@@ -99,7 +99,7 @@ export function commentVelocityReport(
     `| Crashes | Before | After |`,
     `|--------|---------|---------|`,
     `| Count |  ${issueBefore.numCrashesString} | ${issueAfter.numCrashesString} |`,
-    `| Percent | ${issueBefore.crashPercentageString} | ${issueAfter.crashPercentageString} |`,
+    `| Percentage | ${issueBefore.crashPercentageString} | ${issueAfter.crashPercentageString} |`,
   ].join('\n');
 
   return callApi('POST', `issues/${issueBefore.githubNumber}/comments`, {

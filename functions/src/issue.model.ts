@@ -229,7 +229,7 @@ https://github.com/oddbit/crashlytics-github/blob/master/README.md
 | Crashlytics ID | ${CRASHLYTICS_ID} ${issue.issueId} |
 | Crashlytics Title | ${CRASHLYTICS_TITLE} ${issue.issueTitle} |
 | Issue Created | ${CREATE_TIME} ${issue.createTime} |
-| Percent Crashes | ${VELOCITY_PERCENT} ${GithubIssue.pct2str(
+| Crash Percentage | ${VELOCITY_PERCENT} ${GithubIssue.pct2str(
       issue.velocityAlert?.crashPercentage,
     )} |
 | Num Crashes | ${VELOCITY_CRASHES} ${GithubIssue.num2str(
