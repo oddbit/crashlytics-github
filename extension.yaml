@@ -41,7 +41,7 @@ resources:
     description: Creates new Github Issue when a new Crashlytics Issue is created.
     properties:
       location: ${LOCATION}
-      runtime: "nodejs10"
+      runtime: "nodejs8"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.new
         resource: projects/${PROJECT_ID}
@@ -54,7 +54,7 @@ resources:
       existing Github issue that matches.
     properties:
       location: ${LOCATION}
-      runtime: "nodejs10"
+      runtime: "nodejs8"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.velocityAlert
         resource: projects/${PROJECT_ID}

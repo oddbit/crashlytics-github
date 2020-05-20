@@ -24,8 +24,5 @@
     "tslint": "^6.1.2",
     "typescript": "^3.9.2"
   },
-  "private": true,
-  "engines": {
-    "node": "10"
-  }
+  "private": true
 }
