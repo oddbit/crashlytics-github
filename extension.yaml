@@ -17,7 +17,8 @@ version: 0.0.1
 specVersion: v1beta
 
 displayName: Integrate Crashlytics with Github issues
-description: Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
+description: >-
+  Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
 
 license: Apache-2.0
 
@@ -39,8 +40,8 @@ resources:
     type: firebaseextensions.v1beta.function
     description: Creates new Github Issue when a new Crashlytics Issue is created.
     properties:
-      sourceDirectory: ./functions
       location: ${LOCATION}
+      runtime: "nodejs10"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.new
         resource: projects/${PROJECT_ID}
@@ -52,8 +53,8 @@ resources:
       information, or creates a new Github issue if not possible to find any
       existing Github issue that matches.
     properties:
-      sourceDirectory: ./functions
       location: ${LOCATION}
+      runtime: "nodejs10"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.velocityAlert
         resource: projects/${PROJECT_ID}
