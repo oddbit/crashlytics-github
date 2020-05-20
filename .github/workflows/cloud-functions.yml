@@ -1,18 +1,18 @@
-name: Firebase
+name: Cloud Functions
 on:
   pull_request:
     branches:
       - master
       - develop
     paths:
-      - .github/workflows/firebase.yml
+      - .github/workflows/cloud-functions.yml
       - "functions/**/*"
   push:
     branches:
       - master
       - develop
     paths:
-      - .github/workflows/firebase.yml
+      - .github/workflows/cloud-functions.yml
       - "functions/**/*"
 jobs:
   test:
