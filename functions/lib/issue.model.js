@@ -117,7 +117,7 @@ class GithubIssue {
     }
     toRequestJson() {
         const json = {
-            githubTitle: this.githubTitle,
+            title: this.githubTitle,
             body: this.body,
             assignees: this.assignees,
             labels: Array.from(new Set(this.labels)),
@@ -153,6 +153,7 @@ class GithubIssue {
         var _a, _b;
         return `
 ## Crashlytics information
+View the issue in [Firebase Console](https://console.firebase.google.com/project/${config_1.default.projectId}/crashlytics/app/${issue.appInfo.appPlatform}:${issue.appInfo.appId}/issues/${issue.issueId}).
 
 <!--
 Do not change anything in the table below; it is automatically
@@ -169,7 +170,7 @@ https://github.com/oddbit/crashlytics-github/blob/master/README.md
 | Crashlytics ID | ${CRASHLYTICS_ID} ${issue.issueId} |
 | Crashlytics Title | ${CRASHLYTICS_TITLE} ${issue.issueTitle} |
 | Issue Created | ${CREATE_TIME} ${issue.createTime} |
-| Percent Crashes | ${VELOCITY_PERCENT} ${GithubIssue.pct2str((_a = issue.velocityAlert) === null || _a === void 0 ? void 0 : _a.crashPercentage)} |
+| Crash Percentage | ${VELOCITY_PERCENT} ${GithubIssue.pct2str((_a = issue.velocityAlert) === null || _a === void 0 ? void 0 : _a.crashPercentage)} |
 | Num Crashes | ${VELOCITY_CRASHES} ${GithubIssue.num2str((_b = issue.velocityAlert) === null || _b === void 0 ? void 0 : _b.crashes)} |
 | App ID | ${APP_ID} ${issue.appInfo.appId} |
 | App Name |${APP_NAME} ${issue.appInfo.appName} |

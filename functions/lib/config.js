@@ -16,6 +16,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
+    projectId: process.env.PROJECT_ID,
     location: process.env.LOCATION,
     githubApiUser: process.env.GITHUB_API_USER,
     githubAccessToken: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,

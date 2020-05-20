@@ -20,15 +20,11 @@ const functions = require("firebase-functions");
 const config_1 = require("./config");
 const githubApi = require("./github-api");
 const issue_model_1 = require("./issue.model");
-exports.createNewGithubIssue = functions.crashlytics
-    .issue()
-    .onNew(crashlyticsIssue => {
+exports.createNewGithubIssue = functions.handler.crashlytics.issue.onNew(crashlyticsIssue => {
     console.log(JSON.stringify(crashlyticsIssue));
     return githubApi.createIssue(issue_model_1.GithubIssue.fromCrashlyticsIssue(crashlyticsIssue));
 });
-exports.updateVelocityAlert = functions.crashlytics
-    .issue()
-    .onVelocityAlert(async (crashlyticsIssue) => {
+exports.updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAlert(async (crashlyticsIssue) => {
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
         console.log(`Could not find any Github issue matching ${crashlyticsIssue.issueId}`);

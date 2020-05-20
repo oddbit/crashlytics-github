@@ -20,13 +20,18 @@ const rp = require("request-promise");
 const config_1 = require("./config");
 const issue_model_1 = require("./issue.model");
 function callApi(method, endPoint, payload) {
+    const apiUser = config_1.default.githubApiUser;
+    const apiToken = config_1.default.githubAccessToken;
+    const repository = config_1.default.githubRepository;
+    const apiUrl = `https://api.github.com/repos/${repository}/${endPoint}`;
+    console.log('[callApi] ' + JSON.stringify({ apiUser, repository, apiUrl }));
     return rp({
         auth: {
-            user: config_1.default.githubApiUser,
-            pass: config_1.default.githubAccessToken,
+            user: apiUser,
+            pass: apiToken,
         },
         method: method,
-        uri: `https://api.github.com/repos/${config_1.default.githubRepository}/${endPoint}`,
+        uri: apiUrl,
         body: payload,
         json: true,
         headers: { 'user-agent': 'oddbit/crashlytics-integration' },
@@ -71,7 +76,7 @@ function commentVelocityReport(issueBefore, issueAfter) {
         `| Crashes | Before | After |`,
         `|--------|---------|---------|`,
         `| Count |  ${issueBefore.numCrashesString} | ${issueAfter.numCrashesString} |`,
-        `| Percent | ${issueBefore.crashPercentageString} | ${issueAfter.crashPercentageString} |`,
+        `| Percentage | ${issueBefore.crashPercentageString} | ${issueAfter.crashPercentageString} |`,
     ].join('\n');
     return callApi('POST', `issues/${issueBefore.githubNumber}/comments`, {
         body: comment,
