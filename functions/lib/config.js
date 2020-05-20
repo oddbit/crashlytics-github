@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+function csv2Array(csv) {
+    return (csv || '')
+        .split(',')
+        .map(value => value.trim())
+        .filter(value => value !== '');
+}
 exports.default = {
     projectId: process.env.PROJECT_ID,
     location: process.env.LOCATION,
     githubApiUser: process.env.GITHUB_API_USER,
     githubAccessToken: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
     githubRepository: process.env.GITHUB_REPOSITORY,
-    githubIssueAssignees: (process.env.ISSUE_ASSIGNEES || '').split(','),
-    githubLabelsIssue: (process.env.ISSUE_LABELS_NEW || '').split(','),
-    githubLabelsVelocity: (process.env.ISSUE_LABELS_VELOCITY || '').split(','),
+    githubIssueAssignees: csv2Array(process.env.ISSUE_ASSIGNEES),
+    githubLabelsIssue: csv2Array(process.env.ISSUE_LABELS_NEW),
+    githubLabelsVelocity: csv2Array(process.env.ISSUE_LABELS_VELOCITY),
 };
 //# sourceMappingURL=config.js.map
