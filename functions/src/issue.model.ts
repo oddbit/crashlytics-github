@@ -49,12 +49,11 @@ export class GithubIssue implements IGithubIssue {
   milestone?: number;
   state?: string;
   constructor(data: IGithubIssue) {
-    this.githubNumber = data.githubNumber || null;
-    this.githubUrl = data.githubUrl || null;
-    this.githubId =
-      data.githubUrl
-        ?.replace('https://github.com/', '')
-        ?.replace('/issues', '') || null;
+    this.githubNumber = data.githubNumber;
+    this.githubUrl = data.githubUrl;
+    this.githubId = data.githubUrl
+      ?.replace('https://github.com/', '')
+      ?.replace('/issues', '');
 
     this.githubTitle = data.githubTitle;
     this.body = data.body;
@@ -65,27 +64,27 @@ export class GithubIssue implements IGithubIssue {
   }
 
   get crashlyticsId() {
-    return this.extractValue(CRASHLYTICS_ID);
+    return this.extractValue(CRASHLYTICS_ID) || '';
   }
 
   get crashlyticsTitle() {
-    return this.extractValue(CRASHLYTICS_TITLE);
+    return this.extractValue(CRASHLYTICS_TITLE) || '';
   }
 
   get appId() {
-    return this.extractValue(APP_ID);
+    return this.extractValue(APP_ID) || '';
   }
 
   get appName() {
-    return this.extractValue(APP_NAME);
+    return this.extractValue(APP_NAME) || '';
   }
 
   get appPlatform() {
-    return this.extractValue(APP_PLATFORM);
+    return this.extractValue(APP_PLATFORM) || '';
   }
 
   get issueCreated() {
-    return this.extractValue(CREATE_TIME);
+    return this.extractValue(CREATE_TIME) || '';
   }
 
   set issueCreated(value: string) {
@@ -93,20 +92,20 @@ export class GithubIssue implements IGithubIssue {
   }
 
   get appVersion() {
-    return this.extractValue(APP_VERSION);
+    return this.extractValue(APP_VERSION) || '';
   }
 
   set appVersion(value: string) {
     this.replaceValue(APP_VERSION, value);
   }
 
-  get numCrashes() {
+  get numCrashes(): number {
     const numCrashes = this.extractValue(VELOCITY_CRASHES) || '?';
     const numCrashesNum = parseInt(numCrashes);
-    return isNaN(numCrashesNum) ? null : numCrashesNum;
+    return isNaN(numCrashesNum) ? 0 : numCrashesNum;
   }
 
-  set numCrashes(value: number | null) {
+  set numCrashes(value: number) {
     this.replaceValue(VELOCITY_CRASHES, GithubIssue.num2str(value));
   }
 
@@ -118,10 +117,10 @@ export class GithubIssue implements IGithubIssue {
     const parsedPct = this.extractValue(VELOCITY_PERCENT) || '?';
     const pctStrValue = parsedPct.replace('%', '');
     const pctNumber = parseFloat(pctStrValue);
-    return isNaN(pctNumber) ? null : pctNumber / 100;
+    return isNaN(pctNumber) ? 0.0 : pctNumber / 100;
   }
 
-  set crashPercentage(value: number | null) {
+  set crashPercentage(value: number) {
     this.replaceValue(VELOCITY_PERCENT, GithubIssue.pct2str(value));
   }
 
@@ -153,8 +152,8 @@ export class GithubIssue implements IGithubIssue {
 
   updateWithCrashlyticsIssue(crashlyticsIssue: functions.crashlytics.Issue) {
     this.appVersion = crashlyticsIssue.appInfo.latestAppVersion;
-    this.crashPercentage = crashlyticsIssue.velocityAlert?.crashPercentage;
-    this.numCrashes = crashlyticsIssue.velocityAlert?.crashes;
+    this.crashPercentage = crashlyticsIssue.velocityAlert?.crashPercentage || 0;
+    this.numCrashes = crashlyticsIssue.velocityAlert?.crashes || 0;
   }
 
   toRequestJson(): IGithubIssue {
@@ -192,7 +191,7 @@ export class GithubIssue implements IGithubIssue {
 
   private extractValue(valueId: string) {
     const matchResult = this.body.match(this.createValueRegEx(valueId));
-    return matchResult?.pop() || null;
+    return matchResult?.pop();
   }
 
   private static pct2str(pct?: number) {

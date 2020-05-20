@@ -406,9 +406,9 @@ describe('Model Tests', () => {
   it('Should be able to create from crashlytics issue', () => {
     const issue = GithubIssue.fromCrashlyticsIssue(crashlyticsIssue);
 
-    expect(issue.githubId).equal(null);
-    expect(issue.githubNumber).equal(null);
-    expect(issue.githubUrl).equal(null);
+    expect(issue.githubId).equal(undefined);
+    expect(issue.githubNumber).equal(undefined);
+    expect(issue.githubUrl).equal(undefined);
     expect(issue.githubTitle).equal(crashlyticsIssue.issueTitle);
     expect(issue.crashlyticsId).equal(crashlyticsIssue.issueId);
     expect(issue.crashlyticsTitle).equal(crashlyticsIssue.issueTitle);
@@ -417,9 +417,9 @@ describe('Model Tests', () => {
     expect(issue.appName).equal(crashlyticsIssue.appInfo.appName);
     expect(issue.appPlatform).equal(crashlyticsIssue.appInfo.appPlatform);
     expect(issue.appVersion).equal(crashlyticsIssue.appInfo.latestAppVersion);
-    expect(issue.crashPercentage).equal(null);
+    expect(issue.crashPercentage).equal(0.0);
     expect(issue.crashPercentageString).equal('?');
-    expect(issue.numCrashes).equal(null);
+    expect(issue.numCrashes).equal(0);
     expect(issue.numCrashesString).equal('?');
   });
 
@@ -438,10 +438,10 @@ describe('Model Tests', () => {
       crashlyticsVelocityAlert.appInfo.latestAppVersion,
     );
     expect(issue.crashPercentage).equal(
-      crashlyticsVelocityAlert.velocityAlert.crashPercentage,
+      crashlyticsVelocityAlert.velocityAlert?.crashPercentage,
     );
     expect(issue.numCrashes).equal(
-      crashlyticsVelocityAlert.velocityAlert.crashes,
+      crashlyticsVelocityAlert.velocityAlert?.crashes,
     );
   });
 
@@ -463,9 +463,9 @@ describe('Model Tests', () => {
     expect(issue.appName).equal('app-name');
     expect(issue.appPlatform).equal('app-platform');
     expect(issue.appVersion).equal('1.2.3+4-pre_alfa');
-    expect(issue.crashPercentage).equal(null);
+    expect(issue.crashPercentage).equal(0.0);
     expect(issue.crashPercentageString).equal('?');
-    expect(issue.numCrashes).equal(null);
+    expect(issue.numCrashes).equal(0);
     expect(issue.numCrashesString).equal('?');
   });
   it('Should be able to create from Github API response WITH velocity alert', () => {
@@ -505,10 +505,10 @@ describe('Model Tests', () => {
       crashlyticsVelocityAlert.appInfo.latestAppVersion,
     );
     expect(issue.crashPercentage).equal(
-      crashlyticsVelocityAlert.velocityAlert.crashPercentage,
+      crashlyticsVelocityAlert.velocityAlert?.crashPercentage,
     );
     expect(issue.numCrashes).equal(
-      crashlyticsVelocityAlert.velocityAlert.crashes,
+      crashlyticsVelocityAlert.velocityAlert?.crashes,
     );
   });
 
