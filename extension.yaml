@@ -16,8 +16,7 @@ name: crashlytics-github
 version: 0.0.1
 specVersion: v1beta
 displayName: Integrate Crashlytics with Github issues
-description: >-
-  Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
+description: Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
 billingRequired: true
 
 license: Apache-2.0
@@ -40,24 +39,21 @@ roles:
 resources:
   - name: createNewGithubIssue
     type: firebaseextensions.v1beta.function
-    description: >-
-      Creates new Github Issue when a new Crashlytics Issue is created.
+    description: Creates new Github Issue when a new Crashlytics Issue is created.
     properties:
       location: ${LOCATION}
-      runtime: "nodejs8"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.new
         resource: projects/${PROJECT_ID}
 
   - name: updateVelocityAlert
     type: firebaseextensions.v1beta.function
-    description: >-
+    description:
       Listens for velocity alerts and updates existing Github issues with new
       information, or creates a new Github issue if not possible to find any
       existing Github issue that matches.
     properties:
       location: ${LOCATION}
-      runtime: "nodejs8"
       eventTrigger:
         eventType: providers/firebase.crashlytics/eventTypes/issue.velocityAlert
         resource: projects/${PROJECT_ID}
@@ -92,10 +88,8 @@ params:
   - param: GITHUB_API_USER
     label: Github API user
     description: >-
-      The user account that the extension will be used to access
-      the Github Repository. All issues and comments that are created
-      will be using this account as actor. This is most likely, you
-      who are reading this. Your own Github Account.
+      The Github username that the extension will use is Github API requests.
+      All issues and comments that are created will be using this account as actor.
     type: string
     example: octocat
     required: true
@@ -103,6 +97,9 @@ params:
   - param: GITHUB_PERSONAL_ACCESS_TOKEN
     label: Github Personal Access Token
     description: >-
+      The personal access token that will be used to authorize Github API requests.
+      This access token must have `repo` scope access.
+
       [Read Github Documentation](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
        on how to obtain a Github Personal Access Token.
     type: string
@@ -114,7 +111,7 @@ params:
     description: >-
       The name of the Github Repository where the issue reports will be created.
       This should be the full repository reference with both owner and repository
-      name. For example: [octocat/Hello-World](https://github.com/octocat/Hello-World)
+      name.
     type: string
     example: octocat/Hello-World
     required: true
@@ -122,9 +119,8 @@ params:
   - param: ISSUE_ASSIGNEES
     label: Github Issue Assignees
     description: >-
-      Automatically assign the issues to a repository collaborator.
-      Provide a comma separated list of users, such as: octocat, DennisAlund
-      Each comma separated value will add a user as assignee to the issue.
+      Which user(s) should be assigned to the issue by default? Provide one or
+      several **Github usernames** in a comma separated string.
     type: string
     example: octocat, DennisAlund
     required: false
@@ -132,9 +128,9 @@ params:
   - param: ISSUE_LABELS_NEW
     label: Crashlytics Issue Labels
     description: >-
-      Github issue labels to be added if Crashlytics is reporting a new issue.
-      Provide a comma separated list of labels, such as: bug, crashlytics
-      Each comma separated value will add a label to the issue.
+      What [Github issue labels](https://help.github.com/en/github/managing-your-work-on-github/about-labels)
+      should be added to a **new** issue that is being created?
+      You can provide one or several labels in a comma separated string.
     type: string
     example: bug, crashlytics
     default: bug, crashlytics
@@ -143,10 +139,11 @@ params:
   - param: ISSUE_LABELS_VELOCITY
     label: Velocity Alert Labels
     description: >-
-      Github issue labels to be added if Crashlytics is reporting a velocity alert.
-      Provide a comma separated list of labels, such as: bug, crashlytics: velocity, priority
-      Each comma separated value will add a label to the issue.
+      What [Github issue labels](https://help.github.com/en/github/managing-your-work-on-github/about-labels)
+      should be added to a **velocity alert update**? You can provide one or several labels in a comma separated string.
+
+      The labels you provide here are **additional** to those that you provided for new issues.
+      Existing issue labels are unchanged if you skip this configuration value.
     type: string
-    example: bug, crashlytics
-    default: bug, crashlytics
+    example: crashlytics:velocity, priority
     required: false

@@ -1,9 +1,11 @@
 # Integrate Crashlytics with Github issues
 
 ### Description
+
 Integrates Crashlytics issue reports with Github Issues and keeps them up to date.
 
 ### Details
+
 Use this extension to add integrate Crashlytics reports with Github Issues.
 
 This extension creates and updates Github Issues with information from Crashlytics. It will mark up issues
@@ -32,18 +34,36 @@ Usage of this extension also requires you to have a Github account. You are resp
 
 - **Cloud Functions location:** Where do you want to deploy the functions created for this extension?
 
-- **Github API user:** The user account that the extension will be used to access the Github Repository. All issues and comments that are created will be using this account as actor. This is most likely, you who are reading this. Your own Github Account.
+- **Github API user:** The Github username that the extension will use is Github API requests. All issues and comments that are created will be using this account as actor.
 
-- **Github Personal Access Token:** [Read Github Documentation](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+  For example: `octocat`
+
+- **Github Personal Access Token:** The personal access token that will be used to authorize Github API requests. This access token must have `repo` scope access.
+
+  [Read Github Documentation](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
   on how to obtain a Github Personal Access Token.
 
-- **Github Repository:** The name of the Github Repository where the issue reports will be created. This should be the full repository reference with both owner and repository name. For example: [octocat/Hello-World](https://github.com/octocat/Hello-World)
+- **Github Repository:** The name of the Github Repository where the issue reports will be created. This should be the full repository reference with both owner and repository name.
 
-- **Github Issue Assignees:** Automatically assign the issues to a repository collaborator. Provide a comma separated list of users, for example: `octocat, DennisAlund`. Each comma separated value will add a user as assignee to the issue.
+  For example: `octocat/Hello-World`
 
-- **Crashlytics Issue Labels:** Github issue labels to be added if Crashlytics is reporting a new issue. Provide a comma separated list of labels, for example: `bug, crashlytics`. Each comma separated value will add a label to the issue.
+- **Github Issue Assignees:** Which user(s) should be assigned to the issue by default? Provide one or several **Github usernames** in a comma separated string.
 
-- **Velocity Alert Labels:** Github issue labels to be added if Crashlytics is reporting a velocity alert. Provide a comma separated list of labels, for example: `bug, crashlytics: velocity, priority`. Each comma separated value will add a label to the issue.
+  For example: `octocat, DennisAlund`
+
+- **Crashlytics Issue Labels:** What [Github issue labels](https://help.github.com/en/github/managing-your-work-on-github/about-labels)
+  should be added to a **new** issue that is being created?
+  You can provide one or several labels in a comma separated string.
+
+  For example: `bug, crashlytics`
+
+- **Velocity Alert Labels:** What [Github issue labels](https://help.github.com/en/github/managing-your-work-on-github/about-labels)
+  should be added to a **velocity alert update**? You can provide one or several labels
+  in a comma separated string.
+
+  The labels you provide here are **additional** to those that you provided for new issues. Existing issue labels are unchanged if you skip this configuration value.
+
+  For example: `crashlytics:velocity, priority`
 
 ### Cloud Functions
 
