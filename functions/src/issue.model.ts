@@ -213,6 +213,11 @@ export class GithubIssue implements IGithubIssue {
   private static createIssueDescription(issue: functions.crashlytics.Issue) {
     return `
 ## Crashlytics information
+View the issue in [Firebase Console](https://console.firebase.google.com/project/${
+      config.projectId
+    }/crashlytics/app/${issue.appInfo.appPlatform}:${
+      issue.appInfo.appId
+    }/issues/${issue.issueId}).
 
 <!--
 Do not change anything in the table below; it is automatically
