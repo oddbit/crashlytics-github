@@ -37,6 +37,14 @@ export interface IGithubIssue {
   state?: string;
   labels: string[];
 }
+export interface IGithubIssueRequest {
+  title: string;
+  body: string;
+  assignees: string[];
+  milestone?: number;
+  state?: string;
+  labels: string[];
+}
 
 export class GithubIssue implements IGithubIssue {
   readonly githubNumber?: number;
@@ -156,9 +164,9 @@ export class GithubIssue implements IGithubIssue {
     this.numCrashes = crashlyticsIssue.velocityAlert?.crashes || 0;
   }
 
-  toRequestJson(): IGithubIssue {
-    const json: IGithubIssue = {
-      githubTitle: this.githubTitle,
+  toRequestJson(): IGithubIssueRequest {
+    const json: IGithubIssueRequest = {
+      title: this.githubTitle,
       body: this.body,
       assignees: this.assignees,
       labels: Array.from(new Set(this.labels)),
