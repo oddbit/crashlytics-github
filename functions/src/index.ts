@@ -19,19 +19,18 @@ import config from './config';
 import * as githubApi from './github-api';
 import { GithubIssue } from './issue.model';
 
-export const createNewGithubIssue = functions.crashlytics
-  .issue()
-  .onNew(crashlyticsIssue => {
+export const createNewGithubIssue = functions.handler.crashlytics.issue.onNew(
+  crashlyticsIssue => {
     console.log(JSON.stringify(crashlyticsIssue));
 
     return githubApi.createIssue(
       GithubIssue.fromCrashlyticsIssue(crashlyticsIssue),
     );
-  });
+  },
+);
 
-export const updateVelocityAlert = functions.crashlytics
-  .issue()
-  .onVelocityAlert(async crashlyticsIssue => {
+export const updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAlert(
+  async crashlyticsIssue => {
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
       console.log(
@@ -51,4 +50,5 @@ export const updateVelocityAlert = functions.crashlytics
       githubApi.updateIssue(velocityAlertIssue),
       githubApi.commentVelocityReport(githubIssue, velocityAlertIssue),
     ]);
-  });
+  },
+);
