@@ -16,65 +16,39 @@
 
 import * as functions from 'firebase-functions';
 import config from './config';
-import { createIssueDescription, getCrashPercentage, getNumCrashes, updateIssueDescription } from './description-utils';
-import * as github from './github-api';
-import { GithubIssue } from './github-issue';
+import * as githubApi from './github-api';
+import { GithubIssue } from './issue.model';
 
 export const createNewGithubIssue = functions.crashlytics
   .issue()
   .onNew(crashlyticsIssue => {
     console.log(JSON.stringify(crashlyticsIssue));
-    const githubIssue = new GithubIssue({
-      title: crashlyticsIssue.issueTitle,
-      body: createIssueDescription(crashlyticsIssue),
-      assignees: config.githubIssueAssignees,
-      labels: config.githubIssueLabelsNew,
-    });
 
-    return github.createIssue(githubIssue);
+    return githubApi.createIssue(
+      GithubIssue.fromCrashlyticsIssue(crashlyticsIssue),
+    );
   });
 
 export const updateVelocityAlert = functions.crashlytics
   .issue()
   .onVelocityAlert(async crashlyticsIssue => {
-    const githubIssue = await github.findIssue(crashlyticsIssue);
+    const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
       console.log(
         `Could not find any Github issue matching ${crashlyticsIssue.issueId}`,
       );
 
-      return github.createIssue(
-        new GithubIssue({
-          title: crashlyticsIssue.issueTitle,
-          body: createIssueDescription(crashlyticsIssue),
-          assignees: config.githubIssueAssignees,
-          labels: config.githubIssueLabelsVelocity,
-        }),
-      );
+      const newIssue = GithubIssue.fromCrashlyticsIssue(crashlyticsIssue);
+      newIssue.labels.push(...config.githubLabelsVelocity);
+      return githubApi.createIssue(newIssue);
     }
 
-    console.log(
-      `Updating velocity report in Github issue ${githubIssue.number}`,
-    );
-    const promises = [];
+    const velocityAlertIssue = new GithubIssue(githubIssue);
+    velocityAlertIssue.updateWithCrashlyticsIssue(crashlyticsIssue);
+    velocityAlertIssue.labels.push(...config.githubLabelsVelocity);
 
-    githubIssue.body = updateIssueDescription(
-      githubIssue.body,
-      crashlyticsIssue,
-    );
-
-    promises.push(github.updateIssue(githubIssue));
-
-    promises.push(
-      github.commentVelocityReport(
-        githubIssue.number,
-        {
-          crashPercentage: getCrashPercentage(githubIssue.body),
-          crashes: getNumCrashes(githubIssue.body),
-        },
-        crashlyticsIssue.velocityAlert,
-      ),
-    );
-
-    return Promise.all(promises);
+    return Promise.all([
+      githubApi.updateIssue(velocityAlertIssue),
+      githubApi.commentVelocityReport(githubIssue, velocityAlertIssue),
+    ]);
   });

@@ -20,8 +20,8 @@ export default {
   githubAccessToken: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubIssueAssignees: (process.env.ISSUE_ASSIGNEES || '').split(','),
-  githubIssueLabelsNew: (process.env.ISSUE_LABELS_NEW || '').split(','),
-  githubIssueLabelsVelocity: (process.env.ISSUE_LABELS_VELOCITY || '').split(
+  githubLabelsIssue: (process.env.ISSUE_LABELS_NEW || '').split(','),
+  githubLabelsVelocity: (process.env.ISSUE_LABELS_VELOCITY || '').split(
     ',',
   ),
 };

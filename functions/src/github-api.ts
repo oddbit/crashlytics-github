@@ -17,8 +17,7 @@
 import * as functions from 'firebase-functions';
 import * as rp from 'request-promise';
 import config from './config';
-import * as githubDescriptionUtils from './description-utils';
-import { GithubIssue } from './github-issue';
+import { GithubIssue } from './issue.model';
 
 type ApiMethods = 'GET' | 'PATCH' | 'POST';
 function callApi(method: ApiMethods, endPoint: string, payload: any) {
@@ -36,18 +35,27 @@ function callApi(method: ApiMethods, endPoint: string, payload: any) {
 }
 
 export async function findIssue(
-  issue: functions.crashlytics.Issue,
+  crashlyticsIssue: functions.crashlytics.Issue,
 ): Promise<GithubIssue | null> {
-  const queryParams = { since: issue.createTime };
-  const githubIssues = (await callApi('GET', `issues`, queryParams)) || [];
-  console.log(`Got ${githubIssues.length} issues since ${issue.createTime}`);
-  for (const githubIssue of githubIssues) {
-    if (githubDescriptionUtils.getIssueId(githubIssue.body) === issue.issueId) {
-      return GithubIssue.fromGithubIssueResponse(githubIssue);
-    }
-  }
+  console.log(`[findIssue] Find issue" ${crashlyticsIssue.issueId}`);
+  const queryParams = { since: crashlyticsIssue.createTime };
+  const responseIssues = (await callApi('GET', `issues`, queryParams)) || [];
+  console.log(
+    `Got ${responseIssues.length} issues since ${crashlyticsIssue.createTime}`,
+  );
 
-  return null;
+  const matchingIssue: GithubIssue = responseIssues
+    .map((responseIssue: any) =>
+      GithubIssue.fromGithubIssueResponse(responseIssue),
+    )
+    .filter(
+      (githubIssue: GithubIssue) =>
+        githubIssue.crashlyticsId === crashlyticsIssue.issueId,
+    )
+    .pop();
+
+  console.log(`[findIssue] Result: ${matchingIssue}`);
+  return matchingIssue || null;
 }
 
 export async function createIssue(githubIssue: GithubIssue) {
@@ -63,51 +71,32 @@ export async function createIssue(githubIssue: GithubIssue) {
 }
 
 export function updateIssue(githubIssue: GithubIssue) {
-  if (!githubIssue.number) {
+  if (!githubIssue.githubNumber) {
     throw new Error('Issue must already have a Github Issue number');
   }
   console.log(`[updateIssue] ${githubIssue}`);
   return callApi(
     'PATCH',
-    `issues/${githubIssue.number}`,
+    `issues/${githubIssue.githubNumber}`,
     githubIssue.toRequestJson(),
   );
 }
 
 export function commentVelocityReport(
-  issueNumber: number,
-  velocityAlertBefore?: functions.crashlytics.VelocityAlert,
-  velocityAlertAfter?: functions.crashlytics.VelocityAlert,
+  issueBefore: GithubIssue,
+  issueAfter: GithubIssue,
 ) {
-  console.log(
-    `[commentVelocityReport] ${JSON.stringify({
-      issueNumber,
-      velocityAlertBefore,
-      velocityAlertAfter,
-    })}`,
-  );
-  const pctBefore = githubDescriptionUtils.stringifyVelocityPercent(
-    velocityAlertBefore?.crashPercentage,
-  );
-  const pctAfter = githubDescriptionUtils.stringifyVelocityPercent(
-    velocityAlertAfter?.crashPercentage,
-  );
+  console.log(`[commentVelocityReport] ${issueBefore})}`);
 
-  const numCrashBefore = githubDescriptionUtils.stringifyVelocityCrashNum(
-    velocityAlertBefore?.crashes,
-  );
-  const numCrashAfter = githubDescriptionUtils.stringifyVelocityCrashNum(
-    velocityAlertAfter?.crashes,
-  );
   const comment = [
     `## Crashlytics Velocity Alert Report`,
-    `| Attribute | Before value | After value |`,
+    `| Crashes | Before | After |`,
     `|--------|---------|---------|`,
-    `| Pct Crashes | ${pctBefore} | ${pctAfter} |`,
-    `| Num Crashes | ${numCrashBefore} | ${numCrashAfter} |`,
+    `| Count |  ${issueBefore.numCrashesString} | ${issueAfter.numCrashesString} |`,
+    `| Percent | ${issueBefore.crashPercentageString} | ${issueAfter.crashPercentageString} |`,
   ].join('\n');
 
-  return callApi('POST', `issues/${issueNumber}/comments`, {
+  return callApi('POST', `issues/${issueBefore.githubNumber}/comments`, {
     body: comment,
   });
 }
