@@ -30,14 +30,6 @@ const APP_VERSION = '<!-- cgext_app_version -->';
 export interface IGithubIssue {
   githubNumber?: number;
   githubUrl?: string;
-  githubTitle: string;
-  body: string;
-  assignees: string[];
-  milestone?: number;
-  state?: string;
-  labels: string[];
-}
-export interface IGithubIssueRequest {
   title: string;
   body: string;
   assignees: string[];
@@ -50,7 +42,7 @@ export class GithubIssue implements IGithubIssue {
   readonly githubNumber?: number;
   readonly githubUrl?: string;
   readonly githubId?: string;
-  githubTitle: string;
+  title: string;
   body: string;
   assignees: string[];
   labels: string[];
@@ -63,7 +55,7 @@ export class GithubIssue implements IGithubIssue {
       ?.replace('https://github.com/', '')
       ?.replace('/issues', '');
 
-    this.githubTitle = data.githubTitle;
+    this.title = data.title;
     this.body = data.body;
     this.assignees = [...(data.assignees || [])];
     this.labels = [...(data.labels || [])];
@@ -140,7 +132,7 @@ export class GithubIssue implements IGithubIssue {
     return new GithubIssue({
       githubNumber: json['number'],
       githubUrl: json['html_url'],
-      githubTitle: json['title'],
+      title: json['title'],
       body: json['body'],
       assignees: (json['assignees'] || []).map((a: any) => a['login']),
       labels: (json['labels'] || []).map((a: any) => a['name']),
@@ -151,7 +143,7 @@ export class GithubIssue implements IGithubIssue {
 
   static fromCrashlyticsIssue(json: functions.crashlytics.Issue) {
     return new GithubIssue({
-      githubTitle: json.issueTitle,
+      title: json.issueTitle,
       body: GithubIssue.createIssueDescription(json),
       assignees: config.githubIssueAssignees,
       labels: config.githubLabelsIssue,
@@ -164,9 +156,9 @@ export class GithubIssue implements IGithubIssue {
     this.numCrashes = crashlyticsIssue.velocityAlert?.crashes || 0;
   }
 
-  toRequestJson(): IGithubIssueRequest {
-    const json: IGithubIssueRequest = {
-      title: this.githubTitle,
+  toRequestJson(): IGithubIssue {
+    const json: IGithubIssue = {
+      title: this.title,
       body: this.body,
       assignees: this.assignees,
       labels: Array.from(new Set(this.labels)),

@@ -32,7 +32,7 @@ class GithubIssue {
         this.githubNumber = data.githubNumber;
         this.githubUrl = data.githubUrl;
         this.githubId = (_b = (_a = data.githubUrl) === null || _a === void 0 ? void 0 : _a.replace('https://github.com/', '')) === null || _b === void 0 ? void 0 : _b.replace('/issues', '');
-        this.githubTitle = data.githubTitle;
+        this.title = data.title;
         this.body = data.body;
         this.assignees = [...(data.assignees || [])];
         this.labels = [...(data.labels || [])];
@@ -93,7 +93,7 @@ class GithubIssue {
         return new GithubIssue({
             githubNumber: json['number'],
             githubUrl: json['html_url'],
-            githubTitle: json['title'],
+            title: json['title'],
             body: json['body'],
             assignees: (json['assignees'] || []).map((a) => a['login']),
             labels: (json['labels'] || []).map((a) => a['name']),
@@ -103,7 +103,7 @@ class GithubIssue {
     }
     static fromCrashlyticsIssue(json) {
         return new GithubIssue({
-            githubTitle: json.issueTitle,
+            title: json.issueTitle,
             body: GithubIssue.createIssueDescription(json),
             assignees: config_1.default.githubIssueAssignees,
             labels: config_1.default.githubLabelsIssue,
@@ -117,7 +117,7 @@ class GithubIssue {
     }
     toRequestJson() {
         const json = {
-            title: this.githubTitle,
+            title: this.title,
             body: this.body,
             assignees: this.assignees,
             labels: Array.from(new Set(this.labels)),

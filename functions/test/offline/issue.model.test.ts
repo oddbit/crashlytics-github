@@ -409,7 +409,7 @@ describe('Model Tests', () => {
     expect(issue.githubId).equal(undefined);
     expect(issue.githubNumber).equal(undefined);
     expect(issue.githubUrl).equal(undefined);
-    expect(issue.githubTitle).equal(crashlyticsIssue.issueTitle);
+    expect(issue.title).equal(crashlyticsIssue.issueTitle);
     expect(issue.crashlyticsId).equal(crashlyticsIssue.issueId);
     expect(issue.crashlyticsTitle).equal(crashlyticsIssue.issueTitle);
     expect(issue.issueCreated).equal(crashlyticsIssue.createTime);
@@ -455,7 +455,7 @@ describe('Model Tests', () => {
     expect(issue.githubUrl).equal(
       'https://github.com/octocat/Hello-World/issues/1347',
     );
-    expect(issue.githubTitle).equal('Found a bug');
+    expect(issue.title).equal('Found a bug');
     expect(issue.crashlyticsId).equal('issue-id');
     expect(issue.crashlyticsTitle).equal('issue-title');
     expect(issue.issueCreated).equal('2020-06-14T02:15:00.000+08:00');
@@ -478,7 +478,7 @@ describe('Model Tests', () => {
     expect(issue.githubUrl).equal(
       'https://github.com/octocat/Hello-World/issues/1347',
     );
-    expect(issue.githubTitle).equal('Found a bug');
+    expect(issue.title).equal('Found a bug');
     expect(issue.crashlyticsId).equal('issue-id');
     expect(issue.crashlyticsTitle).equal('issue-title');
     expect(issue.issueCreated).equal('2020-06-14T02:15:00.000+08:00');
