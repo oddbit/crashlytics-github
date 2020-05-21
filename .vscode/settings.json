@@ -15,5 +15,8 @@
   },
   "files.trimTrailingWhitespace": true,
   "files.trimFinalNewlines": true,
-  "files.insertFinalNewline": false
+  "files.insertFinalNewline": false,
+  "cSpell.words": [
+    "cgext"
+  ]
 }
