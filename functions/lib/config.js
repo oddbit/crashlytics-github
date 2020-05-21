@@ -30,5 +30,6 @@ exports.default = {
     githubIssueAssignees: csv2Array(process.env.ISSUE_ASSIGNEES),
     githubLabelsIssue: csv2Array(process.env.ISSUE_LABELS_NEW),
     githubLabelsVelocity: csv2Array(process.env.ISSUE_LABELS_VELOCITY),
+    githubLabelsRegressed: csv2Array(process.env.ISSUE_LABELS_REGRESSED),
 };
 //# sourceMappingURL=config.js.map

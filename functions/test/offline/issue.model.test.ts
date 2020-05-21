@@ -413,6 +413,7 @@ describe('Model Tests', () => {
     expect(issue.crashlyticsId).equal(crashlyticsIssue.issueId);
     expect(issue.crashlyticsTitle).equal(crashlyticsIssue.issueTitle);
     expect(issue.issueCreated).equal(crashlyticsIssue.createTime);
+    expect(issue.issueResolved).equal('?');
     expect(issue.appId).equal(crashlyticsIssue.appInfo.appId);
     expect(issue.appName).equal(crashlyticsIssue.appInfo.appName);
     expect(issue.appPlatform).equal(crashlyticsIssue.appInfo.appPlatform);
@@ -429,6 +430,7 @@ describe('Model Tests', () => {
     expect(issue.crashlyticsId).equal(crashlyticsVelocityAlert.issueId);
     expect(issue.crashlyticsTitle).equal(crashlyticsVelocityAlert.issueTitle);
     expect(issue.issueCreated).equal(crashlyticsVelocityAlert.createTime);
+    expect(issue.issueResolved).equal('?');
     expect(issue.appId).equal(crashlyticsVelocityAlert.appInfo.appId);
     expect(issue.appName).equal(crashlyticsVelocityAlert.appInfo.appName);
     expect(issue.appPlatform).equal(
@@ -459,6 +461,7 @@ describe('Model Tests', () => {
     expect(issue.crashlyticsId).equal('issue-id');
     expect(issue.crashlyticsTitle).equal('issue-title');
     expect(issue.issueCreated).equal('2020-06-14T02:15:00.000+08:00');
+    expect(issue.issueResolved).equal('?');
     expect(issue.appId).equal('app-id');
     expect(issue.appName).equal('app-name');
     expect(issue.appPlatform).equal('app-platform');
@@ -468,6 +471,7 @@ describe('Model Tests', () => {
     expect(issue.numCrashes).equal(0);
     expect(issue.numCrashesString).equal('?');
   });
+
   it('Should be able to create from Github API response WITH velocity alert', () => {
     const issue = GithubIssue.fromGithubIssueResponse(
       githubIssueApiResponseWithVelocity,
@@ -482,6 +486,7 @@ describe('Model Tests', () => {
     expect(issue.crashlyticsId).equal('issue-id');
     expect(issue.crashlyticsTitle).equal('issue-title');
     expect(issue.issueCreated).equal('2020-06-14T02:15:00.000+08:00');
+    expect(issue.issueResolved).equal('?');
     expect(issue.appId).equal('app-id');
     expect(issue.appName).equal('app-name');
     expect(issue.appPlatform).equal('app-platform');
@@ -490,6 +495,7 @@ describe('Model Tests', () => {
     expect(issue.crashPercentageString).equal('12.00%');
     expect(issue.numCrashes).equal(42);
     expect(issue.numCrashesString).equal('42');
+    expect(issue.state).equal('open');
   });
 
   it('Should be able to apply velocity alert to existing github issue', () => {
@@ -553,5 +559,16 @@ describe('Model Tests', () => {
       .and.satisfy((desc: string) =>
         desc.endsWith(issueCustomDescriptionSuffix),
       );
+  });
+
+  it('Should be able to create from Github API response WITH velocity alert', () => {
+    const dateString = '2020-05-21T11:12:13+08:00';
+    const issue = GithubIssue.fromCrashlyticsIssue({
+      ...crashlyticsIssue,
+      resolvedTime: dateString,
+    });
+
+    expect(issue.issueResolved).equal(dateString);
+    expect(issue.state).equal('open');
   });
 });

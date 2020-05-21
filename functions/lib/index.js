@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateVelocityAlert = exports.createNewGithubIssue = void 0;
+exports.updateRegression = exports.updateVelocityAlert = exports.createNewGithubIssue = void 0;
 const functions = require("firebase-functions");
 const config_1 = require("./config");
 const githubApi = require("./github-api");
@@ -38,6 +38,22 @@ exports.updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAler
     return Promise.all([
         githubApi.updateIssue(velocityAlertIssue),
         githubApi.commentVelocityReport(githubIssue, velocityAlertIssue),
+    ]);
+});
+exports.updateRegression = functions.handler.crashlytics.issue.onRegressed(async (crashlyticsIssue) => {
+    const githubIssue = await githubApi.findIssue(crashlyticsIssue);
+    if (!githubIssue) {
+        console.log(`Could not find any Github issue matching ${crashlyticsIssue.issueId}`);
+        const newIssue = issue_model_1.GithubIssue.fromCrashlyticsIssue(crashlyticsIssue);
+        newIssue.labels.push(...config_1.default.githubLabelsRegressed);
+        return githubApi.createIssue(newIssue);
+    }
+    const regressedIssue = new issue_model_1.GithubIssue(githubIssue);
+    regressedIssue.updateWithCrashlyticsIssue(crashlyticsIssue);
+    regressedIssue.labels.push(...config_1.default.githubLabelsRegressed);
+    return Promise.all([
+        githubApi.updateIssue(regressedIssue),
+        githubApi.commentRegression(githubIssue, regressedIssue),
     ]);
 });
 //# sourceMappingURL=index.js.map

@@ -65,8 +65,17 @@ Usage of this extension also requires you to have a Github account. You are resp
 
   For example: `crashlytics:velocity, priority`
 
+- **Regression Labels:** What [Github issue labels](https://help.github.com/en/github/managing-your-work-on-github/about-labels)
+  should be added to a **regressed issue**? You can provide one or several labels in a comma separated string.
+
+  The labels you provide here are **additional** to those that you provided for new issues. Existing issue labels are unchanged if you skip this configuration value.
+
+  For example: `crashlytics:regression, priority`
+
 ### Cloud Functions
 
 - **createNewGithubIssue:** Creates new Github Issue when a new Crashlytics Issue is created.
 
 - **updateVelocityAlert:** Listens for velocity alerts and updates existing Github issues with new information, or creates a new Github issue if not possible to find any existing Github issue that matches.
+
+- **updateRegression:** Listens for regressed issue reports in Crashlytics and updates existing Github issues with new information, or creates a new Github issue if not possible to find any existing Github issue that matches.

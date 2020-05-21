@@ -30,7 +30,7 @@ export const createNewGithubIssue = functions.handler.crashlytics.issue.onNew(
 );
 
 export const updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAlert(
-  async crashlyticsIssue => {
+  async (crashlyticsIssue) => {
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
       console.log(
@@ -49,6 +49,30 @@ export const updateVelocityAlert = functions.handler.crashlytics.issue.onVelocit
     return Promise.all([
       githubApi.updateIssue(velocityAlertIssue),
       githubApi.commentVelocityReport(githubIssue, velocityAlertIssue),
+    ]);
+  },
+);
+
+export const updateRegression = functions.handler.crashlytics.issue.onRegressed(
+  async (crashlyticsIssue) => {
+    const githubIssue = await githubApi.findIssue(crashlyticsIssue);
+    if (!githubIssue) {
+      console.log(
+        `Could not find any Github issue matching ${crashlyticsIssue.issueId}`,
+      );
+
+      const newIssue = GithubIssue.fromCrashlyticsIssue(crashlyticsIssue);
+      newIssue.labels.push(...config.githubLabelsRegressed);
+      return githubApi.createIssue(newIssue);
+    }
+
+    const regressedIssue = new GithubIssue(githubIssue);
+    regressedIssue.updateWithCrashlyticsIssue(crashlyticsIssue);
+    regressedIssue.labels.push(...config.githubLabelsRegressed);
+
+    return Promise.all([
+      githubApi.updateIssue(regressedIssue),
+      githubApi.commentRegression(githubIssue, regressedIssue),
     ]);
   },
 );

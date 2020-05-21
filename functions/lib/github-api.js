@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentVelocityReport = exports.updateIssue = exports.createIssue = exports.findIssue = void 0;
+exports.commentRegression = exports.commentVelocityReport = exports.updateIssue = exports.createIssue = exports.findIssue = void 0;
 const rp = require("request-promise");
 const config_1 = require("./config");
 const issue_model_1 = require("./issue.model");
@@ -83,4 +83,19 @@ function commentVelocityReport(issueBefore, issueAfter) {
     });
 }
 exports.commentVelocityReport = commentVelocityReport;
+function commentRegression(issueBefore, regressedIssue) {
+    console.log(`[commentVelocityReport] ${issueBefore})}`);
+    const comment = [
+        `## Crashlytics Regression`,
+        `Issue was resolved at ${regressedIssue.issueResolved} but appeared again in Crashlytics.`,
+        `| Crashes | Before | After |`,
+        `|--------|---------|---------|`,
+        `| Count |  ${issueBefore.numCrashesString} | ${regressedIssue.numCrashesString} |`,
+        `| Percentage | ${issueBefore.crashPercentageString} | ${regressedIssue.crashPercentageString} |`,
+    ].join('\n');
+    return callApi('POST', `issues/${issueBefore.githubNumber}/comments`, {
+        body: comment,
+    });
+}
+exports.commentRegression = commentRegression;
 //# sourceMappingURL=github-api.js.map

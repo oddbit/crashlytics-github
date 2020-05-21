@@ -20,6 +20,7 @@ const config_1 = require("./config");
 const CRASHLYTICS_ID = '<!-- cgext_id -->';
 const CRASHLYTICS_TITLE = '<!-- cgext_title -->';
 const CREATE_TIME = '<!-- cgext_create_time -->';
+const RESOLVE_TIME = '<!-- cgext_resolve_time -->';
 const VELOCITY_PERCENT = '<!-- cgext_velocity_percent -->';
 const VELOCITY_CRASHES = '<!-- cgext_velocity_crashes -->';
 const APP_ID = '<!-- cgext_app_id -->';
@@ -45,6 +46,9 @@ class GithubIssue {
     get crashlyticsTitle() {
         return this.extractValue(CRASHLYTICS_TITLE) || '';
     }
+    get crashlyticsUrl() {
+        return GithubIssue.createCrashlyticsUrl(this.appPlatform, this.appId, this.crashlyticsId);
+    }
     get appId() {
         return this.extractValue(APP_ID) || '';
     }
@@ -59,6 +63,9 @@ class GithubIssue {
     }
     set issueCreated(value) {
         this.replaceValue(CREATE_TIME, value);
+    }
+    get issueResolved() {
+        return this.extractValue(RESOLVE_TIME) || '?';
     }
     get appVersion() {
         return this.extractValue(APP_VERSION) || '';
@@ -107,6 +114,7 @@ class GithubIssue {
             body: GithubIssue.createIssueDescription(json),
             assignees: config_1.default.githubIssueAssignees,
             labels: config_1.default.githubLabelsIssue,
+            state: 'open',
         });
     }
     updateWithCrashlyticsIssue(crashlyticsIssue) {
@@ -149,11 +157,15 @@ class GithubIssue {
     static num2str(num) {
         return !!num ? `${num}` : '?';
     }
+    static createCrashlyticsUrl(appPlatform, appId, crashlyticsId) {
+        return `https://console.firebase.google.com/project/${config_1.default.projectId}/crashlytics/app/${appPlatform}:${appId}/issues/${crashlyticsId}`;
+    }
     static createIssueDescription(issue) {
         var _a, _b;
+        const crashlyticsUrl = GithubIssue.createCrashlyticsUrl(issue.appInfo.appPlatform, issue.appInfo.appId, issue.issueId);
         return `
 ## Crashlytics information
-View the issue in [Firebase Console](https://console.firebase.google.com/project/${config_1.default.projectId}/crashlytics/app/${issue.appInfo.appPlatform}:${issue.appInfo.appId}/issues/${issue.issueId}).
+View the issue in [Firebase Console](${crashlyticsUrl}).
 
 <!--
 Do not change anything in the table below; it is automatically
@@ -170,6 +182,7 @@ https://github.com/oddbit/crashlytics-github/blob/master/README.md
 | Crashlytics ID | ${CRASHLYTICS_ID} ${issue.issueId} |
 | Crashlytics Title | ${CRASHLYTICS_TITLE} ${issue.issueTitle} |
 | Issue Created | ${CREATE_TIME} ${issue.createTime} |
+| Issue Resolved | ${RESOLVE_TIME} ${issue.resolvedTime || '?'} |
 | Crash Percentage | ${VELOCITY_PERCENT} ${GithubIssue.pct2str((_a = issue.velocityAlert) === null || _a === void 0 ? void 0 : _a.crashPercentage)} |
 | Num Crashes | ${VELOCITY_CRASHES} ${GithubIssue.num2str((_b = issue.velocityAlert) === null || _b === void 0 ? void 0 : _b.crashes)} |
 | App ID | ${APP_ID} ${issue.appInfo.appId} |

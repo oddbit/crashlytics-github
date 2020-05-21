@@ -106,3 +106,22 @@ export function commentVelocityReport(
     body: comment,
   });
 }
+
+export function commentRegression(
+  issueBefore: GithubIssue,
+  regressedIssue: GithubIssue,
+) {
+  console.log(`[commentVelocityReport] ${issueBefore})}`);
+  const comment = [
+    `## Crashlytics Regression`,
+    `Issue was resolved at ${regressedIssue.issueResolved} but appeared again in [Crashlytics](${regressedIssue.crashlyticsUrl}).`,
+    `| Crashes | Before | After |`,
+    `|--------|---------|---------|`,
+    `| Count |  ${issueBefore.numCrashesString} | ${regressedIssue.numCrashesString} |`,
+    `| Percentage | ${issueBefore.crashPercentageString} | ${regressedIssue.crashPercentageString} |`,
+  ].join('\n');
+
+  return callApi('POST', `issues/${issueBefore.githubNumber}/comments`, {
+    body: comment,
+  });
+}

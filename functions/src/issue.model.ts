@@ -20,6 +20,7 @@ import config from './config';
 const CRASHLYTICS_ID = '<!-- cgext_id -->';
 const CRASHLYTICS_TITLE = '<!-- cgext_title -->';
 const CREATE_TIME = '<!-- cgext_create_time -->';
+const RESOLVE_TIME = '<!-- cgext_resolve_time -->';
 const VELOCITY_PERCENT = '<!-- cgext_velocity_percent -->';
 const VELOCITY_CRASHES = '<!-- cgext_velocity_crashes -->';
 const APP_ID = '<!-- cgext_app_id -->';
@@ -27,6 +28,7 @@ const APP_NAME = '<!-- cgext_app_name -->';
 const APP_PLATFORM = '<!-- cgext_app_platform -->';
 const APP_VERSION = '<!-- cgext_app_version -->';
 
+export type GithubIssueState = 'open' | 'closed';
 export interface IGithubIssue {
   githubNumber?: number;
   githubUrl?: string;
@@ -34,7 +36,7 @@ export interface IGithubIssue {
   body: string;
   assignees: string[];
   milestone?: number;
-  state?: string;
+  state?: GithubIssueState;
   labels: string[];
 }
 
@@ -47,7 +49,7 @@ export class GithubIssue implements IGithubIssue {
   assignees: string[];
   labels: string[];
   milestone?: number;
-  state?: string;
+  state?: GithubIssueState;
   constructor(data: IGithubIssue) {
     this.githubNumber = data.githubNumber;
     this.githubUrl = data.githubUrl;
@@ -70,6 +72,14 @@ export class GithubIssue implements IGithubIssue {
   get crashlyticsTitle() {
     return this.extractValue(CRASHLYTICS_TITLE) || '';
   }
+  
+  get crashlyticsUrl() {
+    return GithubIssue.createCrashlyticsUrl(
+      this.appPlatform,
+      this.appId,
+      this.crashlyticsId,
+    );
+  }
 
   get appId() {
     return this.extractValue(APP_ID) || '';
@@ -89,6 +99,10 @@ export class GithubIssue implements IGithubIssue {
 
   set issueCreated(value: string) {
     this.replaceValue(CREATE_TIME, value);
+  }
+
+  get issueResolved() {
+    return this.extractValue(RESOLVE_TIME) || '?';
   }
 
   get appVersion() {
@@ -147,6 +161,7 @@ export class GithubIssue implements IGithubIssue {
       body: GithubIssue.createIssueDescription(json),
       assignees: config.githubIssueAssignees,
       labels: config.githubLabelsIssue,
+      state: 'open',
     });
   }
 
@@ -167,6 +182,7 @@ export class GithubIssue implements IGithubIssue {
     if (this.milestone) {
       json.milestone = this.milestone;
     }
+
     if (this.state) {
       json.state = this.state;
     }
@@ -202,14 +218,23 @@ export class GithubIssue implements IGithubIssue {
     return !!num ? `${num}` : '?';
   }
 
+  private static createCrashlyticsUrl(
+    appPlatform: string,
+    appId: string,
+    crashlyticsId: string,
+  ) {
+    return `https://console.firebase.google.com/project/${config.projectId}/crashlytics/app/${appPlatform}:${appId}/issues/${crashlyticsId}`;
+  }
+
   private static createIssueDescription(issue: functions.crashlytics.Issue) {
+    const crashlyticsUrl = GithubIssue.createCrashlyticsUrl(
+      issue.appInfo.appPlatform,
+      issue.appInfo.appId,
+      issue.issueId,
+    );
     return `
 ## Crashlytics information
-View the issue in [Firebase Console](https://console.firebase.google.com/project/${
-      config.projectId
-    }/crashlytics/app/${issue.appInfo.appPlatform}:${
-      issue.appInfo.appId
-    }/issues/${issue.issueId}).
+View the issue in [Firebase Console](${crashlyticsUrl}).
 
 <!--
 Do not change anything in the table below; it is automatically
@@ -226,6 +251,7 @@ https://github.com/oddbit/crashlytics-github/blob/master/README.md
 | Crashlytics ID | ${CRASHLYTICS_ID} ${issue.issueId} |
 | Crashlytics Title | ${CRASHLYTICS_TITLE} ${issue.issueTitle} |
 | Issue Created | ${CREATE_TIME} ${issue.createTime} |
+| Issue Resolved | ${RESOLVE_TIME} ${issue.resolvedTime || '?'} |
 | Crash Percentage | ${VELOCITY_PERCENT} ${GithubIssue.pct2str(
       issue.velocityAlert?.crashPercentage,
     )} |
