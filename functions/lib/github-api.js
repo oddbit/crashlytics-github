@@ -62,15 +62,18 @@ async function createIssue(githubIssue) {
 }
 exports.createIssue = createIssue;
 function updateIssue(githubIssue) {
+    console.log(`[updateIssue] ${githubIssue}`);
     if (!githubIssue.githubNumber) {
         throw new Error('Issue must already have a Github Issue number');
     }
-    console.log(`[updateIssue] ${githubIssue}`);
     return callApi('PATCH', `issues/${githubIssue.githubNumber}`, githubIssue.toRequestJson());
 }
 exports.updateIssue = updateIssue;
 function commentVelocityReport(issueBefore, issueAfter) {
     console.log(`[commentVelocityReport] ${issueBefore})}`);
+    if (!issueBefore.githubNumber) {
+        throw new Error('Issue must already have a Github Issue number');
+    }
     const comment = [
         `## Crashlytics Velocity Alert Report`,
         `| Crashes | Before | After |`,
@@ -84,10 +87,13 @@ function commentVelocityReport(issueBefore, issueAfter) {
 }
 exports.commentVelocityReport = commentVelocityReport;
 function commentRegression(issueBefore, regressedIssue) {
-    console.log(`[commentVelocityReport] ${issueBefore})}`);
+    console.log(`[commentRegression] ${issueBefore})}`);
+    if (!issueBefore.githubNumber) {
+        throw new Error('Issue must already have a Github Issue number');
+    }
     const comment = [
         `## Crashlytics Regression`,
-        `Issue was resolved at ${regressedIssue.issueResolved} but appeared again in Crashlytics.`,
+        `Issue was resolved at ${regressedIssue.issueResolved} but appeared again in [Crashlytics](${regressedIssue.crashlyticsUrl}).`,
         `| Crashes | Before | After |`,
         `|--------|---------|---------|`,
         `| Count |  ${issueBefore.numCrashesString} | ${regressedIssue.numCrashesString} |`,

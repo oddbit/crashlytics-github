@@ -25,6 +25,7 @@ exports.createNewGithubIssue = functions.handler.crashlytics.issue.onNew(crashly
     return githubApi.createIssue(issue_model_1.GithubIssue.fromCrashlyticsIssue(crashlyticsIssue));
 });
 exports.updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAlert(async (crashlyticsIssue) => {
+    console.log(JSON.stringify(crashlyticsIssue));
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
         console.log(`Could not find any Github issue matching ${crashlyticsIssue.issueId}`);
@@ -41,6 +42,7 @@ exports.updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAler
     ]);
 });
 exports.updateRegression = functions.handler.crashlytics.issue.onRegressed(async (crashlyticsIssue) => {
+    console.log(JSON.stringify(crashlyticsIssue));
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
         console.log(`Could not find any Github issue matching ${crashlyticsIssue.issueId}`);

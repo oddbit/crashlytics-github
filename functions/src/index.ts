@@ -30,7 +30,8 @@ export const createNewGithubIssue = functions.handler.crashlytics.issue.onNew(
 );
 
 export const updateVelocityAlert = functions.handler.crashlytics.issue.onVelocityAlert(
-  async (crashlyticsIssue) => {
+  async crashlyticsIssue => {
+    console.log(JSON.stringify(crashlyticsIssue));
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
       console.log(
@@ -54,7 +55,8 @@ export const updateVelocityAlert = functions.handler.crashlytics.issue.onVelocit
 );
 
 export const updateRegression = functions.handler.crashlytics.issue.onRegressed(
-  async (crashlyticsIssue) => {
+  async crashlyticsIssue => {
+    console.log(JSON.stringify(crashlyticsIssue));
     const githubIssue = await githubApi.findIssue(crashlyticsIssue);
     if (!githubIssue) {
       console.log(
