@@ -126,7 +126,7 @@ params:
     description: >-
       The name of the Github Repository where the issue reports will be created.
       This should be the full repository reference with both owner and repository
-      name.
+      name. For example: `octocat/Hello-World`
     type: string
     example: octocat/Hello-World
     required: true
